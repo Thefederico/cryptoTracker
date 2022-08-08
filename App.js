@@ -1,6 +1,6 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import {CoinStack} from './src/screens/CoinsScreen/CoinsStack';
+import {CoinStack} from './src/navigation/CoinsStack';
 
 const App = () => {
   return (
