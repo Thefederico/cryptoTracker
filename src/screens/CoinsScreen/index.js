@@ -3,36 +3,68 @@ import {View, StyleSheet, FlatList, ActivityIndicator} from 'react-native';
 import {colors} from '../../res/colors';
 import {fetchData} from '../../libs/fetchData';
 import {CoinItem} from '../../components/CoinItem';
+import {CoinSearch} from '../../components/CoinSearch';
+
+const API_URL = 'https://api.coinlore.net/api/tickers/';
 
 function CoinsScreen({navigation}) {
-  const [loading, setLoading] = useState(false);
-  const [coins, setCoins] = useState(null);
+  const [state, setState] = useState({
+    loading: false,
+    coins: [],
+    allCoins: [],
+  });
 
   const handlePress = coin => {
     navigation.navigate('Coin Detail', {coin});
   };
 
+  const getCoins = async url => {
+    setState({
+      ...state,
+      loading: true,
+    });
+    const response = await fetchData(url);
+    setState({
+      ...state,
+      coins: response.data,
+      allCoins: response.data,
+    });
+  };
+
+  const handleSearch = query => {
+    const coinsFiltered = state.allCoins.filter(coin => {
+      return (
+        coin.name.toLowerCase().includes(query.toLowerCase()) ||
+        coin.symbol.toLowerCase().includes(query.toLowerCase())
+      );
+    });
+
+    setState({
+      ...state,
+      coins: coinsFiltered,
+    });
+  };
+
   useEffect(() => {
-    if (!coins) {
-      setLoading(true);
-      (async () => {
-        const response = await fetchData(
-          'https://api.coinlore.net/api/tickers/',
-        );
-        setCoins(response.data);
-      })();
+    if (!state.coins.length >= 1) {
+      getCoins(API_URL);
     } else {
-      setLoading(false);
+      setState({
+        ...state,
+        loading: false,
+      });
     }
-  }, [coins]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.coins, state.allCoins]);
 
   return (
     <View style={styles.container}>
-      {loading && (
+      <CoinSearch onChange={handleSearch} />
+      {state.loading && (
         <ActivityIndicator style={styles.loader} color="#fff" size="large" />
       )}
       <FlatList
-        data={coins}
+        data={state.coins}
         renderItem={({item}) => (
           <CoinItem item={item} onPress={() => handlePress(item)} />
         )}
