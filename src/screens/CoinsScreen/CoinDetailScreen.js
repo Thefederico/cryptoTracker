@@ -11,24 +11,16 @@ import {CoinMarketItem} from '../../components/CoinMarketItem';
 import {fetchData} from '../../libs/fetchData';
 import {colors} from '../../res/colors';
 
+const API_URL = 'https://api.coinlore.net/api/coin/markets/?id=';
+
 function CoinDetailScreen({route, navigation}) {
   const [coin] = useState(route.params.coin);
   const [markets, setMarkets] = useState(null);
 
-  useEffect(() => {
-    navigation.setOptions({title: coin.symbol});
-
-    if (!markets) {
-      (async () => {
-        const response = await fetchData(
-          `https://api.coinlore.net/api/coin/markets/?id=${coin.id}`,
-        );
-        setMarkets(response);
-      })();
-    }
-  }, [coin.id, coin.symbol, markets, navigation]);
-
-  console.log(markets);
+  const getData = async id => {
+    const response = await fetchData(`${API_URL}${id}`);
+    setMarkets(response);
+  };
 
   const getCoinIcon = name => {
     if (name) {
@@ -55,6 +47,14 @@ function CoinDetailScreen({route, navigation}) {
 
     return sections;
   };
+
+  useEffect(() => {
+    navigation.setOptions({title: coin.symbol});
+
+    if (!markets) {
+      getData(coin.id);
+    }
+  }, [coin.id, coin.symbol, markets, navigation]);
 
   return (
     <View style={styles.container}>
