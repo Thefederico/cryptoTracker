@@ -1,9 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 class Storage {
-  static instance = Storage();
-
-  async store(key, value) {
+  static async store(key, value) {
     try {
       await AsyncStorage.setItem(key, value);
       return true;
@@ -13,7 +11,7 @@ class Storage {
     }
   }
 
-  async getAll(keys) {
+  static async getAll(keys) {
     try {
       return await AsyncStorage.multiGet(keys);
     } catch (error) {
@@ -22,7 +20,7 @@ class Storage {
     }
   }
 
-  async getAllKeys() {
+  static async getAllKeys() {
     try {
       return await AsyncStorage.getAllKeys();
     } catch (error) {
@@ -31,7 +29,7 @@ class Storage {
     }
   }
 
-  async get(key) {
+  static async get(key) {
     try {
       return await AsyncStorage.getItem(key);
     } catch (error) {
@@ -40,7 +38,7 @@ class Storage {
     }
   }
 
-  async remove(key) {
+  static async remove(key) {
     try {
       await AsyncStorage.removeItem(key);
     } catch (error) {
